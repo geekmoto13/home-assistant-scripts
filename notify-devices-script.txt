@@ -1,0 +1,44 @@
+sequence:
+  - variables:
+      all_devices:
+        - mobile_app_iphone
+        - mobile_app_star8
+      targets: >-
+        {% set t = target_device | default('mobile_app_iphone', true) %} {% set
+        t = [t] if t is string else t %} {{ all_devices if 'all' in t else t }}
+  - repeat:
+      for_each: '{{ targets }}'
+      sequence:
+        - action: notify.{{ repeat.item }}
+          continue_on_error: true
+          metadata: {}
+          data:
+            message: '{{message}}'
+            title: '{{title}}'
+alias: notify robert
+description: notify selected devices
+fields:
+  target_device:
+    name: Device
+    description: Which device(s) to send the notification to
+    required: false
+    selector:
+      select:
+        multiple: true
+        options:
+          - label: All devices
+            value: all
+          - label: Robert's iPhone
+            value: mobile_app_iphone
+          - label: Android tablet (star8)
+            value: mobile_app_star8
+  title:
+    selector:
+      text: null
+    name: title
+    required: true
+  message:
+    selector:
+      text: null
+    name: message
+    required: true
